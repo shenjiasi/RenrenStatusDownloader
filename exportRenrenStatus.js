@@ -17,17 +17,24 @@ function _post(name, content, time) {
         + "</li>";
         return str;
     }
+    
+    this.toXML = function() {
+        var str = "<name>" + this.name + "</name>"
+        + "<time>" + this.time + "</time>"
+        + "<content>" + this.content + "</content>";
+        return str;
+    }
 }
 
 function parseSentence(elem_status) {
     var elem_content = elem_status.getElementsByTagName("h3")[0];
     var status_content = elem_content.innerHTML;
-    var status_time = elem_status.getElementsByClassName("duration")[0].innerText;
+    var status_time = elem_status.getElementsByClassName("duration")[0].innerHTML;
     var elem_origin = elem_status.getElementsByClassName("original-stauts")[0];
     if (elem_origin != null)
         status_content += elem_origin.innerHTML;
     
-    var user_name = elem_content.getElementsByTagName("a")[0].innerText;
+    var user_name = elem_content.getElementsByTagName("a")[0].innerHTML;
     var user_status = new _post(user_name, status_content, status_time);
     return user_status;
 }
@@ -49,7 +56,7 @@ function parseReplies(status_id) {
     
     var replies = new Array;
     for (var i = 0; i < list_reply_names.length; i++) {
-        replies.push(new _post(list_reply_names[i].innerText, list_reply_contents[i]. innerHTML, list_reply_times[i].innerText));
+        replies.push(new _post(list_reply_names[i].innerHTML, list_reply_contents[i]. innerHTML, list_reply_times[i].innerHTML));
     }
     return replies;
 }
@@ -77,6 +84,14 @@ function _status(status_id, sentence, replies) {
         str += "</li>";
         return str;
     }
+    
+    this.toXML = function() {
+        var str = "<sentence>" + this.sentence.toXML() + "</sentence>";
+        for (var i = 0; i < this.replies.length; i++) {
+            str += "<reply>" + this.replies[i].toXML() + "</reply>";
+        }
+        return str;
+    }
 }
 
 var elem_first_status = document.getElementById("my_panel").firstChild;
@@ -92,10 +107,7 @@ while (elem_status != null) {
     var replies = parseReplies(status_id, user_id);
     var the_status = new _status(status_id, sentence, replies);
     
-    alert(the_status.toHTML());
+    alert(the_status.toXML());
     
     elem_status = elem_status.nextSibling;
 }
-
-
-
