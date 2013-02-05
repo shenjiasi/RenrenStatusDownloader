@@ -56,7 +56,7 @@ function parseReplies(status_id) {
     
     var replies = new Array;
     for (var i = 0; i < list_reply_names.length; i++) {
-        replies.push(new _post(list_reply_names[i].innerHTML, list_reply_contents[i]. innerHTML, list_reply_times[i].innerHTML));
+        replies.push(new _post(list_reply_names[i].innerHTML, list_reply_contents[i].innerHTML, list_reply_times[i].innerHTML));
     }
     return replies;
 }
@@ -86,7 +86,8 @@ function _status(status_id, sentence, replies) {
     }
     
     this.toXML = function() {
-        var str = "<sentence>" + this.sentence.toXML() + "</sentence>";
+        var str = "<id>" + this.id + "</id>";
+        str += "<sentence>" + this.sentence.toXML() + "</sentence>";
         for (var i = 0; i < this.replies.length; i++) {
             str += "<reply>" + this.replies[i].toXML() + "</reply>";
         }
@@ -94,20 +95,34 @@ function _status(status_id, sentence, replies) {
     }
 }
 
-var elem_first_status = document.getElementById("my_panel").firstChild;
-var elem_avatar = elem_first_status.getElementsByClassName("avatar")[0];
-var user_id = elem_avatar.getAttribute("namecard");
-
-pullReplies(elem_first_status, user_id);
-
-var elem_status = elem_first_status;
-while (elem_status != null) {
-    var status_id = elem_status.id.substr(7);
-    var sentence = parseSentence(elem_status);
-    var replies = parseReplies(status_id, user_id);
-    var the_status = new _status(status_id, sentence, replies);
+function extractStatusList() {
+    var elem_first_status = document.getElementById("my_panel").firstChild;
+    var elem_avatar = elem_first_status.getElementsByClassName("avatar")[0];
+    var user_id = elem_avatar.getAttribute("namecard");
     
-    alert(the_status.toXML());
+    pullReplies(elem_first_status, user_id);
     
-    elem_status = elem_status.nextSibling;
+    var elem_status = elem_first_status;
+    var arr_status_list = new Array;
+    while (elem_status != null) {
+        var status_id = elem_status.id.substr(7);
+        var sentence = parseSentence(elem_status);
+        var replies = parseReplies(status_id, user_id);
+        arr_status_list.push(new _status(status_id, sentence, replies));
+        elem_status = elem_status.nextSibling;
+    }
+
+    return arr_status_list;
 }
+
+function getStatusListXML() {
+    arr = extractStatusList();
+    var str = "<catalog>";
+    for (var i = 0; i < arr.length; i++) {
+        str += "<status>" + arr[i].toXML() + "</status>";
+    }
+    str += "</catalog>";
+    return str;
+}
+
+document.body.innerHTML = getStatusListXML();
