@@ -85,7 +85,7 @@ function exportStatus() {
             var elem_status = elem_first_status;
             while (elem_status != null) {
                 var status_id = elem_status.id.substr(7);
-                getReplyOfTheDoing(status_id, user_id, user_id, '', false, 3);
+                document.getElementById("replyKey" + status_id).click();
                 elem_status = elem_status.nextSibling;
             }
         }
