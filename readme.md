@@ -11,13 +11,13 @@ Usage
 ----
 
 1. Go to a Renren Status page, for example:
-   a. Open [Renren Homepage](http://www.renren.com/).
-   b. Click the "Status" button in the side-bar on the left.
+   * Open [Renren Homepage](http://www.renren.com/).
+   * Click the "Status" button in the side-bar on the left.
 
 2. Click the Renren Status Downloader icon.
 
 3. Wait for an error alert that tells you to try again later. Click OK.
-   - Sorry for this inconvenience.  I have not yet figured it out. :)
+   * Sorry for this inconvenience, but I have not yet figured it out. :)
 
 4. Click the Renren Status Downloader icon again.
 
