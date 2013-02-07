@@ -133,7 +133,7 @@ function getStatusListXML() {
         return;
     }
     
-    var str = '<?xml version="1.0" encoding="utf-8"?>';
+    var str = '<?xml version="1.0" encoding="' + document.characterSet + '"?>';
     str += "<catalog>";
     for (var i = 0; i < arr.length; i++) {
         str += "<status>" + arr[i].toXML() + "</status>";
@@ -143,5 +143,6 @@ function getStatusListXML() {
 }
 
 var str = getStatusListXML();
-if (str != null)
-    document.body.innerHTML = str;
+if (str != null) {
+    saveAs(new Blob([str] , {type: "text/plain;charset=" + document.characterSet}), "statuslist.xml");
+}
