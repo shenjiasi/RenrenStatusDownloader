@@ -81,9 +81,8 @@ function parseReplies(status_id) {
         throw "Please wait until the replies are ready and try again."
     }
     
+    var list_reply_names = list_replies.getElementsByClassName("replyername");
     var plain_replies = convertPlainText(list_replies);
-
-    var list_reply_names = plain_replies.getElementsByClassName("replyername");
     var list_reply_contents = plain_replies.getElementsByClassName("replycontent");
     var list_reply_times = plain_replies.getElementsByClassName("time");
     
