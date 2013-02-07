@@ -26,15 +26,42 @@ function _post(name, content, time) {
     }
 }
 
+function cloneTree(node) {
+    var clone = node.cloneNode();
+    var children = node.childNodes;
+    for (var i = 0; i < children.length; i++) {
+        clone.appendChild(cloneTree(children[i]));
+    }
+    return clone;
+}
+
+function convertPlainText(elem) {
+    var element = cloneTree(elem);
+    var all_img = element.getElementsByTagName("img");
+    while (all_img.length > 0) {
+        all_img[0].parentNode.replaceChild(document.createTextNode("(" + all_img[0].alt + ")"), all_img[0]);
+    }
+    
+    var all_a = element.getElementsByTagName("a");
+    while (all_a.length > 0) {
+        all_a[0].parentNode.replaceChild(document.createTextNode(all_a[0].innerHTML), all_a[0]);
+    }
+    return element;
+}
+
 function parseSentence(elem_status) {
     var elem_content = elem_status.getElementsByTagName("h3")[0];
-    var status_content = elem_content.innerHTML;
-    var status_time = elem_status.getElementsByClassName("duration")[0].innerHTML;
-    var elem_origin = elem_status.getElementsByClassName("original-stauts")[0];
-    if (elem_origin != null)
-        status_content += elem_origin.innerHTML;
-    
     var user_name = elem_content.getElementsByTagName("a")[0].innerHTML;
+    var elem_origin = elem_status.getElementsByClassName("original-stauts")[0];
+    var status_time = elem_status.getElementsByClassName("duration")[0].innerHTML;
+    
+    var plain_content = convertPlainText(elem_content);
+    var status_content = plain_content.innerHTML;
+    if (elem_origin != null) {
+        var plain_origin = convertPlainText(elem_origin);
+        status_content += plain_origin.innerHTML;
+    }
+    
     var user_status = new _post(user_name, status_content, status_time);
     return user_status;
 }
@@ -53,9 +80,12 @@ function parseReplies(status_id) {
     if (list_replies == null) {
         throw "Please wait until the replies are ready and try again."
     }
-    var list_reply_names = list_replies.getElementsByClassName("replyername");
-    var list_reply_contents = list_replies.getElementsByClassName("replycontent");
-    var list_reply_times = list_replies.getElementsByClassName("time");
+    
+    var plain_replies = convertPlainText(list_replies);
+
+    var list_reply_names = plain_replies.getElementsByClassName("replyername");
+    var list_reply_contents = plain_replies.getElementsByClassName("replycontent");
+    var list_reply_times = plain_replies.getElementsByClassName("time");
     
     var replies = new Array;
     for (var i = 0; i < list_reply_names.length; i++) {
@@ -110,7 +140,7 @@ function extractStatusList() {
     while (elem_status != null) {
         var status_id = elem_status.id.substr(7);
         var sentence = parseSentence(elem_status);
-        var replies = parseReplies(status_id, user_id);
+        var replies = parseReplies(status_id);
         arr_status_list.push(new _status(status_id, sentence, replies));
         elem_status = elem_status.nextSibling;
     }
