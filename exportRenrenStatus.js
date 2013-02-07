@@ -4,20 +4,6 @@ function _post(name, content, time) {
     this.content = content;
     this.time = time;
     
-    this.toString = function() {
-        var str = this.name + "\t" + this.time + "\t" + this.content;
-        return str;
-    }
-    
-    this.toHTML = function() {
-        var str = "<li class=\"post\">"
-        + "<ul class=\"username\">" + this.name + "</ul>"
-        + "<ul class=\"time\">" + this.time + "</ul>"
-        + "<ul class=\"content\">" + this.content + "</ul>"
-        + "</li>";
-        return str;
-    }
-    
     this.toXML = function() {
         var str = "<name>" + this.name + "</name>\n"
         + "<time>" + this.time + "</time>\n"
@@ -52,18 +38,23 @@ function convertPlainText(elem) {
 function parseSentence(elem_status) {
     var elem_content = elem_status.getElementsByTagName("h3")[0];
     var user_name = elem_content.getElementsByTagName("a")[0].innerHTML;
-    var elem_origin = elem_status.getElementsByClassName("original-stauts")[0];
     var status_time = elem_status.getElementsByClassName("duration")[0].innerHTML;
-    
     var plain_content = convertPlainText(elem_content);
     var status_content = plain_content.innerHTML;
-    if (elem_origin != null) {
-        var plain_origin = convertPlainText(elem_origin);
-        status_content += plain_origin.innerHTML;
-    }
-    
     var user_status = new _post(user_name, status_content, status_time);
     return user_status;
+}
+
+function parseOrigin(elem_status) {
+    var elem_content = elem_status.getElementsByTagName("h3")[0];
+    var elem_origin = elem_status.getElementsByClassName("original-stauts")[0];
+    if (elem_origin == null) {
+        return null;
+    }
+    else {
+        var plain_origin = convertPlainText(elem_origin);
+        return plain_origin.innerHTML;
+    }
 }
 
 function pullReplies(elem_first_status, user_id) {
@@ -93,35 +84,20 @@ function parseReplies(status_id) {
     return replies;
 }
 
-function _status(status_id, sentence, replies) {
+function _status(status_id, sentence, origin, replies) {
     this.id = status_id;
     this.sentence = sentence;
+    this.origin = origin;
     this.replies = replies;
-    
-    this.toString = function() {
-        var str = this.id + "\n";
-        str += this.sentence.toString();
-        for (var i = 0; i < this.replies.length; i++) {
-            str += "\n" + this.replies[i].toString();
-        }
-        return str;
-    }
-    
-    this.toHTML = function() {
-        var str = "<li id=\"status-" + this.id + "\">";
-        str += this.sentence.toHTML();
-        for (var i = 0; i < this.replies.length; i++) {
-            str += this.replies[i].toHTML();
-        }
-        str += "</li>";
-        return str;
-    }
     
     this.toXML = function() {
         var str = "<id>" + this.id + "</id>\n";
-        str += "<sentence>" + this.sentence.toXML() + "</sentence>\n";
+        str += "<sentence>\n" + this.sentence.toXML() + "</sentence>\n";
+        if (this.origin != null) {
+            str += "<origin>" + this.origin + "</origin>\n";
+        }
         for (var i = 0; i < this.replies.length; i++) {
-            str += "<reply>" + this.replies[i].toXML() + "</reply>\n";
+            str += "<reply>\n" + this.replies[i].toXML() + "</reply>\n";
         }
         return str;
     }
@@ -139,8 +115,9 @@ function extractStatusList() {
     while (elem_status != null) {
         var status_id = elem_status.id.substr(7);
         var sentence = parseSentence(elem_status);
+        var origin = parseOrigin(elem_status);
         var replies = parseReplies(status_id);
-        arr_status_list.push(new _status(status_id, sentence, replies));
+        arr_status_list.push(new _status(status_id, sentence, origin, replies));
         elem_status = elem_status.nextSibling;
     }
 
