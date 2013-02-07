@@ -50,6 +50,9 @@ function pullReplies(elem_first_status, user_id) {
 
 function parseReplies(status_id) {
     var list_replies = document.getElementById("replyList" + status_id);
+    if (list_replies == null) {
+        throw "Please wait until the replies are ready and try again."
+    }
     var list_reply_names = list_replies.getElementsByClassName("replyername");
     var list_reply_contents = list_replies.getElementsByClassName("replycontent");
     var list_reply_times = list_replies.getElementsByClassName("time");
@@ -116,7 +119,14 @@ function extractStatusList() {
 }
 
 function getStatusListXML() {
-    arr = extractStatusList();
+    try {
+        arr = extractStatusList();
+    }
+    catch (err) {
+        alert("Error loading status list:\n" + err);
+        return;
+    }
+    
     var str = '<?xml version="1.0" encoding="utf-8"?>';
     str += "<catalog>\n";
     for (var i = 0; i < arr.length; i++) {
@@ -126,4 +136,6 @@ function getStatusListXML() {
     return str;
 }
 
-document.body.innerHTML = getStatusListXML();
+var str = getStatusListXML();
+if (str != null)
+    document.body.innerHTML = str;
