@@ -5,9 +5,9 @@ function _post(name, content, time) {
     this.time = time;
     
     this.toXML = function() {
-        var str = "<name>" + this.name + "</name>\n"
-        + "<time>" + this.time + "</time>\n"
-        + "<content>" + this.content + "</content>\n";
+        var str = "<name>" + this.name + "</name>"
+        + "<time>" + this.time + "</time>"
+        + "<content>" + this.content + "</content>";
         return str;
     }
 }
@@ -91,13 +91,13 @@ function _status(status_id, sentence, origin, replies) {
     this.replies = replies;
     
     this.toXML = function() {
-        var str = "<id>" + this.id + "</id>\n";
-        str += "<sentence>\n" + this.sentence.toXML() + "</sentence>\n";
+        var str = "<id>" + this.id + "</id>";
+        str += "<sentence>" + this.sentence.toXML() + "</sentence>";
         if (this.origin != null) {
-            str += "<origin>" + this.origin + "</origin>\n";
+            str += "<origin>" + this.origin + "</origin>";
         }
         for (var i = 0; i < this.replies.length; i++) {
-            str += "<reply>\n" + this.replies[i].toXML() + "</reply>\n";
+            str += "<reply>" + this.replies[i].toXML() + "</reply>";
         }
         return str;
     }
@@ -134,11 +134,11 @@ function getStatusListXML() {
     }
     
     var str = '<?xml version="1.0" encoding="utf-8"?>';
-    str += "<catalog>\n";
+    str += "<catalog>";
     for (var i = 0; i < arr.length; i++) {
-        str += "<status>\n" + arr[i].toXML() + "</status>\n";
+        str += "<status>" + arr[i].toXML() + "</status>";
     }
-    str += "</catalog>\n";
+    str += "</catalog>";
     return str;
 }
 
